@@ -41,7 +41,7 @@ const Register=async(req,res)=>{
 
 
 const Subscribe=async(req,res)=>{
-     try{
+    try {
         const addData = {
             members: [
                {
@@ -56,22 +56,22 @@ const Subscribe=async(req,res)=>{
             method: 'POST',
             headers: {
                Authorization: 'Basic ' + Buffer.from(`anystring:${process.env.MAILCHIMP_API_KEY}`).toString('base64') 
-
             },
             body: addDataJson
-         }
-        request (options, (error, response, body) => {
-            if(error) {
+        }
+    
+        request(options, (error, response, body) => {
+            if (error) {
                 console.log(error);
-                return res.status(403).json({message:'Subscription failed',data:err.message});
+                return res.status(403).json({ message: 'Subscription failed', data: error.message });
             } else {
                 console.log(body)
-                return res.status(200).json({message:'Subscribed successfully'}) 
+                return res.status(200).json({ message: 'Subscribed successfully' });
             }
-        })
-     }
-     catch(err){
-        return res.status(500).json({message:'Subscription failed',data:err});
-     }
+        });
+    } catch (err) {
+        return res.status(500).json({ message: 'Subscription failed', data: err });
+    }
+    
 }
 module.exports={Authentication,Register,Subscribe}

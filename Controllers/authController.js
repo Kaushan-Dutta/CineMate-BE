@@ -71,7 +71,7 @@ const Subscribe=async(req,res)=>{
         })
      }
      catch(err){
-        return res.status(500).json({message:'Subscription failed',data:err.message});
+        return res.status(500).json({message:'Subscription failed',data:err});
      }
 }
 module.exports={Authentication,Register,Subscribe}

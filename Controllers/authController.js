@@ -2,6 +2,7 @@ const {userModel}=require('../Models/UserModel');
 const EmailHandler = require('../Mailer/index');
 
 const request = require("request");
+require("dotenv").config();
 
 const Authentication=async(req,res,next)=>{
     try{
@@ -54,7 +55,7 @@ const Subscribe=async(req,res)=>{
             url: process.env.MAILCHIMP_API,
             method: 'POST',
             headers: {
-               Authorization: 'Basic ' + Buffer.from('anystring:process.env.MAILCHIMP_API_KEY').toString('base64') 
+               Authorization: 'Basic ' + Buffer.from(`anystring:${process.env.MAILCHIMP_API_KEY}`).toString('base64') 
 
             },
             body: addDataJson
@@ -64,7 +65,6 @@ const Subscribe=async(req,res)=>{
                 console.log(error);
                 return res.status(500).json({message:'Subscription failed',data:err.message});
             } else {
-
                 return res.status(200).json({message:'Subscribed successfully'}) 
             }
         })

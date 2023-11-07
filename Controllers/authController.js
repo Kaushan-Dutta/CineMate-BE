@@ -65,6 +65,7 @@ const Subscribe=async(req,res)=>{
                 console.log(error);
                 return res.status(500).json({message:'Subscription failed',data:err.message});
             } else {
+                console.log(body)
                 return res.status(200).json({message:'Subscribed successfully'}) 
             }
         })

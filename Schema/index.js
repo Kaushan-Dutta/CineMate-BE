@@ -1,4 +1,4 @@
-const {userModel,downloadModel,favouriteModel} = require("../Models/UserModel");
+const {userModel,downloadModel,favouriteModel,collectionsModel,collectionContent } = require("../Models/UserModel");
 const {contentModel} = require("../Models/ContentModel");
 
 const {
@@ -41,6 +41,25 @@ const ContentType = new GraphQLObjectType({
       },
     },})
 });
+const CollectionType=new GraphQLObjectType({
+  name:"Collection",
+  fields:()=>({
+    _id:{type:GraphQLString},
+    collectionName:{type:GraphQLString},
+    userEmail:{type:GraphQLString},
+    contents:{
+      type:new GraphQLList(ContentType),
+      async resolve(parent,args){
+        let contents=[];
+        const collection=await collectionContent.find({collectionId:parent._id});
+        for(let i=0;i<collection.length;i++){
+          contents.push(contentModel.findById(collection[i].contentId));
+        }
+        return contents;
+      }
+    }
+  })
+})  
 
 const RootQuery = new GraphQLObjectType({
   name: "RootQuery",
@@ -93,6 +112,19 @@ const RootQuery = new GraphQLObjectType({
           }
       }
   },
+    getCollections:{
+      type:new GraphQLList(CollectionType),
+      args:{userEmail:{type:GraphQLString}},
+      resolve(parent,args){
+        try{
+          //console.log(await collectionsModel.find({userEmail:args.userEmail}));
+          return collectionsModel.find({userEmail:args.userEmail})
+        }
+        catch(err){
+          console.log(err)
+        }
+      }
+    }
   },
 });
 const RootMutation=new GraphQLObjectType({
@@ -154,7 +186,46 @@ const RootMutation=new GraphQLObjectType({
           }
         }
      },
+     deleteContent:{
+      type:ContentType,
+      args:{_id:{type:GraphQLString}},
+      async resolve(parent,args){
+          try{
+              const deleteContent=await contentModel.findByIdAndDelete(args._id);
+              return deleteContent;
+          }
+          catch(err){
+              console.log(err);
+          }
+      },
+     
+    }, 
+    createCollection:{
+        type:CollectionType,
+        args:{collectionName:{type:GraphQLString},userEmail:{type:GraphQLString}},
+        async resolve(parent,args){
+          try{
+            const create= new collectionsModel({collectionName:args.collectionName,userEmail:args.userEmail})
+            return await create.save();}
+          catch(err){
+            console.log(err);
+          }
+        }
+    },
+    addtoCollection:{
+      type:CollectionType,
+      args:{collectionId:{type:GraphQLString},contentId:{type:GraphQLString}},
+      async resolve(parent,args){
+        try{
+          const addNew=new collectionContent({collectionId:args.collectionId,contentId:args.contentId});
+          return await addNew.save();
+        }
+        catch(err){
+          console.log(err);
+        }
+      }
     }
+  }
 })
 module.exports=new GraphQLSchema({
   query:RootQuery,

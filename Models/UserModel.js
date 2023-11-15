@@ -39,10 +39,34 @@ const collectionSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+const collectionsSchema=new mongoose.Schema({
+    collectionName:{
+        type:String,
+        required:true,
+    },
+    userEmail:{
+        type:String,
+        required:true,
+    },
+},{timestamps:true});
+const collectionContentSchema=new mongoose.Schema({
+    collectionId:{
+        type: mongoose.Schema.Types.ObjectId,
+        ref:'CollectionModel',
+        required:true,
+    },
+    contentId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "ContentModel",
+      required: true,
+    },
+},{timestamps:true});
 
 
 const downloadModel=new mongoose.model('DownloadModel',collectionSchema);
 const favouriteModel=new mongoose.model('FavouriteModel',collectionSchema);
 const userModel = new mongoose.model("UserModel", userSchema);
+const collectionsModel = new mongoose.model("CollectionModel", collectionsSchema);
+const collectionContent = new mongoose.model("collectionContentModel", collectionContentSchema);
 
-module.exports = { userModel,downloadModel,favouriteModel };
+module.exports = { userModel,downloadModel,favouriteModel,collectionsModel,collectionContent };

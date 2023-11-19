@@ -1,4 +1,5 @@
 const {userModel}=require('../Models/UserModel');
+const {adminModel}=require('../Models/AdminModel');
 const EmailHandler = require('../Mailer/index');
 
 const request = require("request");
@@ -9,7 +10,11 @@ const Authentication=async(req,res,next)=>{
         const {email,profile}=req.body;
         const getUser=await userModel.find({email});
         if(getUser.length>0){
-            return res.status(200).json({message:'Login Successful',data:getUser});
+            return res.status(200).json({message:'Login Successful',data:getUser,entity:"user"});
+        }
+        const getAdmin=await adminModel.find({email})
+        if(getAdmin.length>0){
+            return res.status(200).json({message:'Login Successful',data:getAdmin,entity:"admin"});
         }
         next();
     }
